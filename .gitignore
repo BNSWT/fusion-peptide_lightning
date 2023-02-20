@@ -130,3 +130,5 @@ dmypy.json
 
 # self-defined contents
 sequence/
+lightning_logs/
+wandb/
