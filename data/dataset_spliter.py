@@ -12,7 +12,7 @@ from distfit import distfit
 import numpy as np
 
 class DatasetSpliter():
-    def __init__(self, positive_path = '', negative_path = '', cut_negative_seq = True, random_sequence_len = None):
+    def __init__(self, positive_path = '', negative_path = '', cut_negative_seq = True, random_sequence_len = 10000):
         if not positive_path or not negative_path:
             return # empty spliter
         

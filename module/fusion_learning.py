@@ -34,7 +34,7 @@ class FusionLearning(pl.LightningModule):
     def predict(self, output):
         ans = []
         for t in output:
-            if t < 0.5:
+            if t < 0.8:
                 ans.append(0)
             else:
                 ans.append(1)

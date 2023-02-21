@@ -16,13 +16,13 @@ from module import *
 
 if __name__ == "__main__":
 
-    datasetSpliter = DatasetSpliter(positive_path="/root/fusion-peptide_lightning/sequence/positive.csv", negative_path='/root/fusion-peptide_lightning/sequence/negative.xlsx')
+    datasetSpliter = DatasetSpliter(positive_path="/zhouyuyang/fusion-peptide_lightning/sequence/positive.csv", negative_path='/zhouyuyang/fusion-peptide_lightning/sequence/negative.xlsx')
 
-    interface = DInterface('sequence_dataset', datasetSpliter, batch_size=10)
+    interface = DInterface('sequence_dataset', datasetSpliter, batch_size=64)
     interface.setup()
 
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    fusionModel = FusionLearning(datasetSpliter.train_lens, datasetSpliter.test_lens, batch_size=10)
+    fusionModel = FusionLearning(datasetSpliter.train_lens, datasetSpliter.test_lens, batch_size=64)
     wandb_logger = WandbLogger()
     trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=1000, auto_lr_find=True, logger=wandb_logger)
 
