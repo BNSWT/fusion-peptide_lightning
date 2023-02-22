@@ -16,7 +16,8 @@ from module import *
 
 if __name__ == "__main__":
 
-    datasetSpliter = DatasetSpliter(positive_path="/zhouyuyang/fusion-peptide_lightning/sequence/positive.csv", negative_path='/zhouyuyang/fusion-peptide_lightning/sequence/negative.xlsx')
+    fastaProcessor = FastaProcessor(positive_path="/zhouyuyang/fusion-peptide_lightning/sequence/positive_group.fasta", negative_path='/zhouyuyang/fusion-peptide_lightning/sequence/negative_group.fasta', group=True)
+    datasetSpliter = DatasetSpliter(fastaProcessor.positive_seq, fastaProcessor.negative_seq, group=True)
 
     interface = DInterface('sequence_dataset', datasetSpliter, batch_size=64)
     interface.setup()

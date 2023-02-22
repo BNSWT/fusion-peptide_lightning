@@ -14,7 +14,7 @@ from data.dataset_spliter import DatasetSpliter
 
 class DInterface(pl.LightningDataModule):
     def __init__(self, dataset='', 
-                 dataset_spliter=DatasetSpliter(), num_workers=8,
+                 dataset_spliter=DatasetSpliter(None, None), num_workers=8,
                  **kwargs):
         super().__init__()
         self.num_workers = num_workers

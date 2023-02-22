@@ -8,5 +8,6 @@ Copyright (c) 2023 by Repr. Lab, Westlake University, All Rights Reserved.
 
 from data.data_interface import DInterface
 from data.dataset_spliter import DatasetSpliter
+from data.fasta_processor import FastaProcessor
 from data.sequence_dataset import SequenceDataset
 from data.visualization import *
