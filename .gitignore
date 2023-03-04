@@ -132,3 +132,4 @@ dmypy.json
 sequence/
 lightning_logs/
 wandb/
+.vscode/
