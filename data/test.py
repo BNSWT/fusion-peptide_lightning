@@ -8,20 +8,39 @@ import sys
 sys.path.append("..") 
 from data import *
 
-fastaProcessor = FastaProcessor(positive_path="/zhouyuyang/fusion-peptide_lightning/sequence/positive.csv", negative_path='/zhouyuyang/fusion-peptide_lightning/sequence/negative.xlsx')
-datasetSpliter = DatasetSpliter(fastaProcessor.positive_seq, fastaProcessor.negative_seq)
+# Split test
+if 1:
+    fastaProcessor = FastaProcessor(positive_path="/zhouyuyang/fusion-peptide_lightning/sequence/positive_group.fasta", negative_path='/zhouyuyang/fusion-peptide_lightning/sequence/negative_group.fasta', group=True)
+    datasetSpliter = DatasetSpliter(fastaProcessor.positive_seq, fastaProcessor.negative_seq, group=True)
 
-print(len(datasetSpliter.train_labels))
-print(len(datasetSpliter.test_labels))
-print(len(datasetSpliter.validation_labels))
+    print("train len:", len(datasetSpliter.train_labels))
+    print("test len:", len(datasetSpliter.test_labels))
+    print("validation len:", len(datasetSpliter.validation_labels))
+    print("train_pos_len:", datasetSpliter.train_pos_len)
+    print("test_pos_len:", datasetSpliter.test_pos_len)
+    print("validation_pos_len:", datasetSpliter.validation_pos_len)
 
+# Interface test
+if 1:
+    interface = DInterface('sequence_dataset', datasetSpliter, batch_size=4)
+    interface.setup()
+    print("====train data====")
+    for i, data in enumerate(interface.train_dataloader()):
+        if i == 1:
+            break
+        print(data)
+    print("====val data====")
+    for i, data in enumerate(interface.val_dataloader()):
+        if i == 1:
+            break
+        print(data)
+    print("====test data====")
+    for i, data in enumerate(interface.test_dataloader()):
+        if i == 1:
+            break
+        print(data)
 
-# interface = DInterface('sequence_dataset', datasetSpliter, batch_size=10)
-# interface.setup()
-# interface.train_dataloader()
-# interface.val_dataloader()
-# interface.test_dataloader()
-
-# fastaProcessor = FastaProcessor()
-# group = fastaProcessor.get_group('/zhouyuyang/fusion-peptide_lightning/sequence/positive_group.fasta')
-# print("end")
+# get group test
+if 0:
+    fastaProcessor = FastaProcessor()
+    group = fastaProcessor.get_group('/zhouyuyang/fusion-peptide_lightning/sequence/positive_group.fasta')

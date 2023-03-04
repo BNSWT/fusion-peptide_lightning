@@ -9,8 +9,8 @@ import importlib
 import pickle as pkl
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
-from torch.utils.data.sampler import WeightedRandomSampler
 from data.dataset_spliter import DatasetSpliter
+from data.unbalance_sampler import UnbalanceSampler
 
 class DInterface(pl.LightningDataModule):
     def __init__(self, dataset='', 
@@ -25,18 +25,18 @@ class DInterface(pl.LightningDataModule):
         self.load_data_module()
         
     def setup(self):
-        self.trainset = self.instancialize(token=self.dataset_spliter.train_tokens, label=self.dataset_spliter.train_labels)
-        self.validationset = self.instancialize(token=self.dataset_spliter.validation_tokens, label=self.dataset_spliter.validation_labels)
-        self.testset = self.instancialize(token=self.dataset_spliter.test_tokens, label=self.dataset_spliter.test_labels)
+        self.trainset = self.instancialize(token=self.dataset_spliter.train_tokens, label=self.dataset_spliter.train_labels, pos_len=self.dataset_spliter.train_pos_len)
+        self.validationset = self.instancialize(token=self.dataset_spliter.validation_tokens, label=self.dataset_spliter.validation_labels, pos_len=self.dataset_spliter.validation_pos_len)
+        self.testset = self.instancialize(token=self.dataset_spliter.test_tokens, label=self.dataset_spliter.test_labels, pos_len=self.dataset_spliter.test_pos_len)
 
     def train_dataloader(self):
-        return DataLoader(self.trainset, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True)
+        return DataLoader(self.trainset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=UnbalanceSampler(self.trainset))
 
     def val_dataloader(self):
-        return DataLoader(self.validationset, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=False)
+        return DataLoader(self.validationset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=UnbalanceSampler(self.validationset))
 
     def test_dataloader(self):
-        return DataLoader(self.testset, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=False)
+        return DataLoader(self.testset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=UnbalanceSampler(self.testset))
 
     def load_data_module(self):
         # Change the `snake_case.py` file name to `CamelCase` class name.

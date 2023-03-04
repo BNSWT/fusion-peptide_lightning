@@ -10,4 +10,5 @@ from data.data_interface import DInterface
 from data.dataset_spliter import DatasetSpliter
 from data.fasta_processor import FastaProcessor
 from data.sequence_dataset import SequenceDataset
+from data.unbalance_sampler import UnbalanceSampler
 from data.visualization import *

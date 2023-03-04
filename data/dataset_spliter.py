@@ -5,7 +5,6 @@ Date: 2023-02-19 14:29:18
 LastEditTime: 2023-02-19 21:34:47
 '''
 import esm
-import random
 import pandas as pd
 from .visualization import *
 
@@ -35,11 +34,9 @@ class DatasetSpliter():
             for group_len in reversed(pos_group_lens):
                 if total > pos_len*0.3 and val_pos_len:
                     test_pos_len = total
-                    print("test_pos_len:", test_pos_len)
                     break
                 elif total > pos_len*0.05 and not val_pos_len:
-                    val_pos_len = total
-                    print("val_pos_len:", val_pos_len)
+                    val_pos_len = total 
                 total += group_len
             total = 0
             val_neg_len =0
@@ -55,12 +52,15 @@ class DatasetSpliter():
         self.converter = alphabet.get_batch_converter()
         
         # head : test_pos_len : val_pos_len : tail
+        self.train_pos_len=pos_len-test_pos_len
         self.train_labels, self.train_strs, self.train_tokens = self.embed(positive_seq[:-test_pos_len], negative_seq[:-test_neg_len])
         self.train_lens = (self.train_tokens != alphabet.padding_idx).sum(1)
         
+        self.test_pos_len=test_pos_len-val_pos_len
         self.test_labels, self.test_strs, self.test_tokens = self.embed(positive_seq[-test_pos_len:-val_pos_len], negative_seq[-test_neg_len:-val_neg_len])
         self.test_lens = (self.test_tokens != alphabet.padding_idx).sum(1)
         
+        self.validation_pos_len=val_pos_len
         self.validation_labels, self.validation_strs, self.validation_tokens = self.embed(positive_seq[-val_pos_len:], negative_seq[-val_neg_len:])
         self.validation_lens = (self.validation_tokens != alphabet.padding_idx).sum(1)
 
@@ -69,6 +69,5 @@ class DatasetSpliter():
         negative_data = [(0., seq) for seq in negative_seq]
         
         all_data = positive_data + negative_data
-        random.shuffle(all_data)
     
         return self.converter(all_data)

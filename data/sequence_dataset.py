@@ -7,9 +7,10 @@ LastEditTime: 2023-02-19 21:50:27
 import torch.utils.data as data
 
 class SequenceDataset(data.Dataset):
-    def __init__(self, token, label):
+    def __init__(self, token, label, pos_len):
         self.token = token
         self.label = label
+        self.pos_len = pos_len
     def __len__(self):
         return len(self.label)
 

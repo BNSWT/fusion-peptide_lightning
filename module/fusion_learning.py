@@ -45,14 +45,13 @@ class FusionLearning(pl.LightningModule):
         # training_step defines the train loop.
         torch.cuda.empty_cache()
         batch_tokens, batch_labels = batch
+        batch_lens = (batch_tokens != 1).sum(1)
         results = self.backbone(batch_tokens, repr_layers=[33], return_contacts=True)
         token_representations = results["representations"][33]
         
-        head = batch_idx*self.batch_size
-        
         sequence_representations = []
         for i, _ in enumerate(token_representations):
-            tokens_len = self.train_batch_lens[head+i]
+            tokens_len = batch_lens[i]
             sequence_representations.append(torch.tensor(token_representations[i, 1:tokens_len-1].mean(0)))
         
         sequence_representations = torch.cat(sequence_representations, dim=-1).reshape(-1, token_representations.shape[-1])
@@ -125,6 +124,8 @@ class FusionLearning(pl.LightningModule):
         acc = Accuracy('binary').to(self.device)
         precision = Precision('binary').to(self.device)
         recall = Recall('binary').to(self.device)
+        auroc = AUROC('binary').to(self.device)
+
         
         test_acc = acc(outputs['preds'], outputs['labels']).item()    
         self.log("test_acc",test_acc,prog_bar=True, on_step=True, on_epoch=True)
@@ -132,6 +133,8 @@ class FusionLearning(pl.LightningModule):
         self.log("test_precision",test_precision,prog_bar=True, on_step=True, on_epoch=True)
         test_recall = recall(outputs['preds'], outputs['labels']).item()    
         self.log("test_recall",test_recall,prog_bar=True, on_step=True, on_epoch=True)
+        test_auroc = auroc(outputs['preds'], outputs['labels']).item()    
+        self.log("test_auroc",test_auroc,prog_bar=True, on_step=True, on_epoch=True)        
         
         return {"loss":outputs["loss"].mean(),"preds":outputs['preds'],"labels":outputs['labels'], "results":outputs['results']}
     

@@ -6,7 +6,7 @@ import numpy as np
 from data.visualization import *
 
 class FastaProcessor():
-    def __init__(self, positive_path='', negative_path='', group = False, random_sequence_len=0, cut_negative_seq = True,save_negative=False, save_fasta=True):
+    def __init__(self, positive_path='', negative_path='', group = False, random_sequence_len=50000, cut_negative_seq = True,save_negative=False, save_fasta=True):
         if not positive_path or not negative_path:
             return # empty spliter
         
@@ -33,8 +33,6 @@ class FastaProcessor():
         else:
             self.positive_seq = self.get_group(positive_path)
             self.negative_seq = self.get_group(negative_path)
-            print("pos_group_size:", len(self.positive_seq))
-            print("neg_group_size:", len(self.negative_seq))
     def get_seq(self, path):
         seqs = []
         # Only for those fasta without newline inside sequence part
