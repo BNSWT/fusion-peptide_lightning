@@ -46,19 +46,23 @@ class FastaProcessor():
     def get_group(self, path):
         group = []
         with open(path, "r") as fp:
-            cnt = 0
+            all_content = fp.read()
             content = []
-            for line in fp.readlines():
-                if '>' in line:
-                    if cnt == 1:
+            for sequence in all_content.split('>'):
+                items = sequence.split('\n')
+                if len(items)==2: # start of a group
+                    if len(content):
                         group.append(content)
-                        content = []
-                        cnt = 0
-                    else:
-                        cnt += 1
+                    content = []
                 else:
-                    content.append(line.strip('\n'))
-                    cnt = 0
+                    sequence = ''
+                    for i, item in enumerate(items):
+                        if i != len(items)-1 and i != 0:
+                            sequence += item
+                    if len(sequence):
+                        content.append(sequence)
+            if len(content):
+                group.append(content)
         return group
     
     def read_csv_str(self, path):
