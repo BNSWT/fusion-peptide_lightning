@@ -54,15 +54,12 @@ class DatasetSpliter():
         # head : test_pos_len : val_pos_len : tail
         self.train_pos_len=pos_len-test_pos_len
         self.train_labels, self.train_strs, self.train_tokens = self.embed(positive_seq[:-test_pos_len], negative_seq[:-test_neg_len])
-        self.train_lens = (self.train_tokens != alphabet.padding_idx).sum(1)
-        
+    
         self.test_pos_len=test_pos_len-val_pos_len
         self.test_labels, self.test_strs, self.test_tokens = self.embed(positive_seq[-test_pos_len:-val_pos_len], negative_seq[-test_neg_len:-val_neg_len])
-        self.test_lens = (self.test_tokens != alphabet.padding_idx).sum(1)
         
         self.validation_pos_len=val_pos_len
         self.validation_labels, self.validation_strs, self.validation_tokens = self.embed(positive_seq[-val_pos_len:], negative_seq[-val_neg_len:])
-        self.validation_lens = (self.validation_tokens != alphabet.padding_idx).sum(1)
 
     def embed(self, positive_seq, negative_seq):
         positive_data = [(1., seq) for seq in positive_seq]

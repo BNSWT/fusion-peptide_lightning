@@ -14,10 +14,9 @@ from data.unbalance_sampler import UnbalanceSampler
 
 class DInterface(pl.LightningDataModule):
     def __init__(self, dataset='', 
-                 dataset_spliter=DatasetSpliter(None, None), num_workers=8,
+                 dataset_spliter=DatasetSpliter(None, None),
                  **kwargs):
         super().__init__()
-        self.num_workers = num_workers
         self.kwargs = kwargs
         self.batch_size = kwargs['batch_size']
         self.dataset = dataset
@@ -30,13 +29,13 @@ class DInterface(pl.LightningDataModule):
         self.testset = self.instancialize(token=self.dataset_spliter.test_tokens, label=self.dataset_spliter.test_labels, pos_len=self.dataset_spliter.test_pos_len)
 
     def train_dataloader(self):
-        return DataLoader(self.trainset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=UnbalanceSampler(self.trainset))
+        return DataLoader(self.trainset, batch_size=self.batch_size, sampler=UnbalanceSampler(self.trainset))
 
     def val_dataloader(self):
-        return DataLoader(self.validationset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=UnbalanceSampler(self.validationset))
+        return DataLoader(self.validationset, batch_size=self.batch_size, sampler=UnbalanceSampler(self.validationset))
 
     def test_dataloader(self):
-        return DataLoader(self.testset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=UnbalanceSampler(self.testset))
+        return DataLoader(self.testset, batch_size=self.batch_size, sampler=UnbalanceSampler(self.testset))
 
     def load_data_module(self):
         # Change the `snake_case.py` file name to `CamelCase` class name.

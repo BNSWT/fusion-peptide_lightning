@@ -20,10 +20,8 @@ import esm
 from data import *
 
 class FusionLearning(pl.LightningModule):
-    def __init__(self, train_batch_lens, test_batch_lens, batch_size):
+    def __init__(self, batch_size):
         super().__init__()
-        self.train_batch_lens = train_batch_lens
-        self.val_batch_lens = test_batch_lens
         self.backbone, _ = esm.pretrained.esm2_t33_650M_UR50D()
         repr_dim = self.backbone.embed_dim
         num_target_classes = 1
@@ -95,15 +93,14 @@ class FusionLearning(pl.LightningModule):
         # training_step defines the train loop.
         self.backbone.eval()
         batch_tokens, batch_labels = batch
+        batch_lens = (batch_tokens != 1).sum(1)
         with torch.no_grad():
             results = self.backbone(batch_tokens, repr_layers=[33], return_contacts=True)
         token_representations = results["representations"][33]
         
-        head = batch_idx*self.batch_size
-        
         sequence_representations = []
         for i, _ in enumerate(token_representations):
-            tokens_len = self.val_batch_lens[head+i]
+            tokens_len = batch_lens[i]
             sequence_representations.append(torch.tensor(token_representations[i, 1:tokens_len-1].mean(0)))
         
         sequence_representations = torch.cat(sequence_representations, dim=-1).reshape(-1, token_representations.shape[-1])
@@ -167,15 +164,15 @@ class FusionLearning(pl.LightningModule):
         # training_step defines the train loop.
         self.backbone.eval()
         batch_tokens, batch_labels = batch
+        batch_lens = (batch_tokens != 1).sum(1)
+
         with torch.no_grad():
             results = self.backbone(batch_tokens, repr_layers=[33], return_contacts=True)
         token_representations = results["representations"][33]
         
-        head = batch_idx*self.batch_size
-        
         sequence_representations = []
         for i, _ in enumerate(token_representations):
-            tokens_len = self.val_batch_lens[head+i]
+            tokens_len = batch_lens[i]
             sequence_representations.append(torch.tensor(token_representations[i, 1:tokens_len-1].mean(0)))
         
         sequence_representations = torch.cat(sequence_representations, dim=-1).reshape(-1, token_representations.shape[-1])

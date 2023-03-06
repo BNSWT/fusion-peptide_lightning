@@ -23,9 +23,9 @@ if __name__ == "__main__":
     interface.setup()
 
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    fusionModel = FusionLearning(datasetSpliter.train_lens, datasetSpliter.test_lens, batch_size=64)
+    fusionModel = FusionLearning(batch_size=64)
     wandb_logger = WandbLogger()
-    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=1000, auto_lr_find=True, logger=wandb_logger)
+    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=1000, logger=wandb_logger)
 
     trainer.fit(model=fusionModel,train_dataloaders=interface.train_dataloader(), val_dataloaders=interface.val_dataloader())
     trainer.test(model=fusionModel, dataloaders=interface.test_dataloader())
