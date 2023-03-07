@@ -6,7 +6,7 @@ import numpy as np
 from data.visualization import *
 
 class FastaProcessor():
-    def __init__(self, positive_path='', negative_path='', group = False, random_sequence_len=50000, cut_negative_seq = True,save_negative=False, save_fasta=True):
+    def __init__(self, positive_path='', negative_path='', group = False, random_sequence_len=50000, cut_negative_seq = True, save_negative=False, save_fasta=True):
         if not positive_path or not negative_path:
             return # empty spliter
         
