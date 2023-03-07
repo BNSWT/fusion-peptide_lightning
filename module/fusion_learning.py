@@ -20,9 +20,11 @@ import esm
 from data import *
 
 class FusionLearning(pl.LightningModule):
-    def __init__(self, batch_size):
+    def __init__(self, batch_size, pretrained_model):
         super().__init__()
-        self.backbone, _ = esm.pretrained.esm2_t33_650M_UR50D()
+        pretrained = getattr(__import__("esm"), "pretrained")
+        model = getattr(pretrained, pretrained_model)
+        self.backbone, self.alphabet = model()
         repr_dim = self.backbone.embed_dim
         num_target_classes = 1
         self.linear = nn.Linear(repr_dim, num_target_classes)
@@ -43,7 +45,7 @@ class FusionLearning(pl.LightningModule):
         # training_step defines the train loop.
         torch.cuda.empty_cache()
         batch_tokens, batch_labels = batch
-        batch_lens = (batch_tokens != 1).sum(1)
+        batch_lens = (batch_tokens != self.alphabet.padding_idx).sum(1)
         results = self.backbone(batch_tokens, repr_layers=[33], return_contacts=True)
         token_representations = results["representations"][33]
         
@@ -93,7 +95,7 @@ class FusionLearning(pl.LightningModule):
         # training_step defines the train loop.
         self.backbone.eval()
         batch_tokens, batch_labels = batch
-        batch_lens = (batch_tokens != 1).sum(1)
+        batch_lens = (batch_tokens != self.alphabet.padding_idx).sum(1)
         with torch.no_grad():
             results = self.backbone(batch_tokens, repr_layers=[33], return_contacts=True)
         token_representations = results["representations"][33]
@@ -164,7 +166,7 @@ class FusionLearning(pl.LightningModule):
         # training_step defines the train loop.
         self.backbone.eval()
         batch_tokens, batch_labels = batch
-        batch_lens = (batch_tokens != 1).sum(1)
+        batch_lens = (batch_tokens != self.alphabet.padding_idx).sum(1)
 
         with torch.no_grad():
             results = self.backbone(batch_tokens, repr_layers=[33], return_contacts=True)

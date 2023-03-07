@@ -10,7 +10,7 @@ from .visualization import *
 
 
 class DatasetSpliter():
-    def __init__(self, positive_seq, negative_seq, group = False):
+    def __init__(self, positive_seq, negative_seq, pretrained_model, group = False):
         if positive_seq is None or negative_seq is None:
             return
         if group:
@@ -48,7 +48,10 @@ class DatasetSpliter():
                     val_neg_len = total
                 total += group_len
         
-        _, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
+
+        pretrained = getattr(__import__("esm"), "pretrained")
+        model = getattr(pretrained, pretrained_model)
+        _, alphabet = model()
         self.converter = alphabet.get_batch_converter()
         
         # head : test_pos_len : val_pos_len : tail

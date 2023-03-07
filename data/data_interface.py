@@ -14,7 +14,7 @@ from data.unbalance_sampler import UnbalanceSampler
 
 class DInterface(pl.LightningDataModule):
     def __init__(self, dataset='', 
-                 dataset_spliter=DatasetSpliter(None, None),
+                 dataset_spliter=DatasetSpliter(None, None, None),
                  **kwargs):
         super().__init__()
         self.kwargs = kwargs
